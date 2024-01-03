@@ -1,0 +1,25 @@
+api:
+  name: "Traffic Violation"
+  service_name: "traffic_violation"
+  description: "Mention some high level description about API Functionality"
+  version: "0.0.1"
+  debug_mode: "True"
+  host: '0.0.0.0'  #'192.168.0.1'
+  port: 8000
+
+object_config:
+  confidence_score: 0.55
+  non_maxima_suppression_threshold: 0.65
+  max_detection: 1000
+  weights_path: "models/best.pt"
+  device: 0
+  image_size: 640
+  show_results: False
+  skip_frame: 1
+  video_output: "models/output.mp4"
+
+streaming:
+  image_encode_extension: 'jpeg'
+  timeout: 15 # time to kill thread with inactivity
+  interval_time: 3600 # seconds
+  max_camera: 16
