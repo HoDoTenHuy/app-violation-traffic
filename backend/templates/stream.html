@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Upload</title>
+</head>
+<body>
+    <h1>Upload Video for Detection</h1>
+
+    <form id="uploadForm" action="http://localhost:8005/detection/run" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="video/mp4">
+        <button type="submit">Upload and Detect</button>
+    </form>
+
+    <p id="loading" style="color: blue; display: none;">Processing video, please wait...</p>
+
+    <!-- Video container for streaming -->
+    <video id="videoStream" controls autoplay style="width: 100%; height: auto;"></video>
+
+    <script>
+        // Handle form submit to upload the video
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(this);
+            const loadingText = document.getElementById('loading');
+            const videoStream = document.getElementById('videoStream');
+
+            // Show loading text
+            loadingText.style.display = 'inline';
+
+            fetch('http://localhost:8005/detection/run', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Tạo URL object cho video stream
+                const reader = response.body.getReader();
+                const videoBlob = new Blob([reader], { type: 'video/mp4' });
+
+                // Set video source từ Blob
+                videoStream.src = URL.createObjectURL(videoBlob);
+
+                // Ẩn loading text khi video sẵn sàng
+                loadingText.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error uploading video:', error);
+                loadingText.style.display = 'none'; // Hide loading text if error occurs
+            });
+        });
+    </script>
+</body>
+</html>

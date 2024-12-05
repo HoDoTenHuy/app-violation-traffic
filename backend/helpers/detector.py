@@ -2,9 +2,9 @@ import os
 import cv2
 import logging
 import numpy as np
+import torch
 
 from ultralytics import YOLO
-from helpers.video_helper import VideoPlayer
 from PIL import Image
 
 logger = logging.getLogger(__name__)
@@ -36,6 +36,8 @@ class ObjectDetectionHelper:
 
     def load_model(self):
         model = YOLO(self.weights_path)
+        if torch.cuda.is_available():
+            model.to('cuda')
         return model
 
     def get_status(self):
@@ -43,7 +45,7 @@ class ObjectDetectionHelper:
 
     def detect(self, image):
         outputs = self.model.predict(image, show=self.show, imgsz=self.input_shape,
-                                     conf=self.conf_thresh, iou=self.iou, device='cpu')
+                                     conf=self.conf_thresh, iou=self.iou, device=self.device)
         return outputs
 
     def track(self, video_path, save_path=f"/var/lib/assets/detect1.mp4"):
